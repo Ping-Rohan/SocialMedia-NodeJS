@@ -3,6 +3,7 @@ const accessTokenRouter = require('./routes/AccessTokenRoute');
 const sanitize = require('express-mongo-sanitize');
 const rateLimiter = require('express-rate-limit');
 const UserRouter = require('./routes/UserRoute');
+const PostRouter = require('./routes/PostRoute');
 const AppError = require('./utility/AppError');
 const cookieParser = require('cookie-parser');
 const express = require('express');
@@ -19,6 +20,7 @@ app.use(sanitize());
 
 // Route Forwarding
 app.use('/api/v1', UserRouter);
+app.use('/api/v1/post', PostRouter);
 app.use('/api/v1/refresh', accessTokenRouter);
 
 // unhandled routes
