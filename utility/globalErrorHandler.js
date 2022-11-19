@@ -40,14 +40,24 @@ function handleDuplicateError(error) {
     return new AppError(`User Already Exist With : ${messages}`, 403);
 }
 
+// handle jwt expiration error
+function handleJwtExpirationError() {
+    return new AppError('JWT Expired Please Renew New Token', 401);
+}
+
 module.exports = (error, request, response, next) => {
     error.statusCode = error.statusCode || 500;
     error.status = error.status || 'Internal Server Error';
 
     if (process.env.NODE_ENV === 'production') {
         // handling mongoose errors
-        if (error.name === 'ValidationError') error = handleValidationError(error);
+        if (error.name === 'ValidationError')
+            error = handleValidationError(error);
         if (error.code === 11000) error = handleDuplicateError(error);
+
+        // handling jwt error
+        if (error.name === 'TokenExpiredError')
+            error = handleJwtExpirationError();
 
         // if only error is operational
         if (error.isOperational) {

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
 
-// user schema
+// User Schema
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -44,7 +45,8 @@ const userSchema = mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: 'https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png',
+        default:
+            'https://www.nicepng.com/png/detail/933-9332131_profile-picture-default-png.png',
     },
     isAdmin: {
         type: Boolean,
@@ -66,9 +68,11 @@ const userSchema = mongoose.Schema({
             ref: 'User',
         },
     ],
+    refreshToken: [String],
+    passwordChangedAt: Date,
 });
 
-// hooks
+// FullName Formatting
 userSchema.pre('save', function (next) {
     this.name = this.name
         .split(' ')
@@ -78,8 +82,40 @@ userSchema.pre('save', function (next) {
     next();
 });
 
-// model
+// Password Hashing
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) next();
+    this.password = await bcrypt.hash(this.password, 10);
+    this.confirmPassword = undefined;
+    next();
+});
+
+// Setting Password Changed Date To Document
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.isNew) return next();
+    this.passwordChangedAt = Date.now();
+    next();
+});
+
+// Method To Check Recent Password Change
+userSchema.methods.hasChangedPasswordRecently = function (tokenIssuedAt) {
+    if (this.passwordChangedAt) {
+        const passwordChangedTime = parseInt(
+            this.passwordChangedAt.getTime() / 1000,
+            10
+        );
+        return passwordChangedTime > tokenIssuedAt;
+    }
+    return false;
+};
+
+// Password Checking
+userSchema.methods.checkPassword = async (currentPassword, hashedPassword) => {
+    return await bcrypt.compare(currentPassword, hashedPassword);
+};
+
+// Model
 const User = mongoose.model('User', userSchema);
 
-// exports
+// Exports
 module.exports = User;
