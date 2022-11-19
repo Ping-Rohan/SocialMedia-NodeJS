@@ -49,40 +49,72 @@ exports.changePassword = catchAsync(async (request, response, next) => {
     });
 });
 
-// Login
-exports.login = catchAsync(async (request, response, next) => {
-    const { email, password } = request.body;
+// Update User Information
+exports.updateUserInformation = catchAsync(async (request, response, next) => {
+    if (request.body.password) delete request.body.password;
 
-    // If Email Or Password Doesnot Exist
-    if (!email || !password) return next(new AppError('Email And Password Required'));
-
-    const foundUser = await User.findOne({ email });
-
-    //If No Document Found Or Password Is Incorrect
-    if (!foundUser || !(await foundUser.checkPassword(password, foundUser.password)))
-        return next(new AppError('Email Or Password Incorrect'));
-
-    // Check if User Has Maxmimum Login Device Limit Reached
-    if (foundUser.refreshToken.length === 2)
-        return next(
-            new AppError(
-                'You Have Reached Your Maximum Device Login Limit . Logout From Other Devices  To Login This Device'
-            )
-        );
-
-    // Generating New Tokens
-    const refreshToken = Authentication.generateRefreshToken({ id: foundUser._id });
-    const accessToken = Authentication.generateAccessToken({ id: foundUser._id });
-
-    // Saving Refresh Token In DB
-    foundUser.refreshToken.push(refreshToken);
-    foundUser.save({ validateBeforeSave: false });
-
-    // Sending Refresh Token As Cookie
-    response.cookie('jwt', refreshToken);
+    const document = User.findById(request.user.id, request.body);
+    await document.updateOne(request.body, { runValidators: true });
 
     response.status(200).json({
-        message: 'Logged In Successfully',
-        accessToken,
+        message: 'Fields Updated Successfully',
+    });
+});
+
+// Follow User
+exports.followUser = catchAsync(async (request, response, next) => {
+    // Searching Targeted Follow Person
+    const document = await User.find({
+        id: request.params.id,
+        followers: request.user.id,
+    });
+
+    // If That User Was Already Followed
+    if (document.length > 0) return next(new AppError('You Have Already Followed This User'));
+
+    // Updating Own Document
+    await User.findByIdAndUpdate(request.user.id, {
+        $push: { following: request.params.id },
+    });
+
+    // Updating Targeted User Document
+    await User.findByIdAndUpdate(request.params.id, {
+        $push: { followers: request.user.id },
+    });
+
+    response.status(200).json({
+        message: 'Followed Successfully',
+    });
+});
+
+// Unfollow User
+exports.unfollowUser = catchAsync(async (request, response, next) => {
+    const document = await User.findOne({ _id: request.params.id, followers: request.user.id });
+
+    if (!document) return next(new AppError('You Never Followed This User'));
+
+    await User.findByIdAndUpdate(request.params.id, {
+        $pull: { followers: request.user.id },
+    });
+
+    await User.findByIdAndUpdate(request.user.id, {
+        $pull: { following: request.params.id },
+    });
+
+    response.status(200).json({
+        message: 'Unfollowed Successfully',
+    });
+});
+
+// Friends Suggestion
+exports.findFriends = catchAsync(async (request, response, next) => {
+    const friendsArr = [...request.user.following, request.user.id];
+    const suggestionFriends = await User.aggregate([
+        { $match: { _id: { $nin: friendsArr } } },
+        { $sample: { size: 10 } },
+    ]).project('-password -refreshToken -dob');
+
+    response.status(200).json({
+        suggestionFriends,
     });
 });
