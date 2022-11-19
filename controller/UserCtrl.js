@@ -30,15 +30,7 @@ exports.createNewAccount = catchAsync(async (request, response, next) => {
     });
 });
 
-// -------------------
-exports.getAllAccounts = catchAsync(async (request, response, next) => {
-    const document = await User.find();
-    response.status(200).json({
-        document,
-    });
-});
-// -------------------
-
+// Change Password
 exports.changePassword = catchAsync(async (request, response, next) => {
     const { currentPassword, password, confirmPassword } = request.body;
     const document = await User.findById(request.user.id);
@@ -57,6 +49,7 @@ exports.changePassword = catchAsync(async (request, response, next) => {
     });
 });
 
+// Login
 exports.login = catchAsync(async (request, response, next) => {
     const { email, password } = request.body;
 
@@ -68,6 +61,14 @@ exports.login = catchAsync(async (request, response, next) => {
     //If No Document Found Or Password Is Incorrect
     if (!foundUser || !(await foundUser.checkPassword(password, foundUser.password)))
         return next(new AppError('Email Or Password Incorrect'));
+
+    // Check if User Has Maxmimum Login Device Limit Reached
+    if (foundUser.refreshToken.length === 2)
+        return next(
+            new AppError(
+                'You Have Reached Your Maximum Device Login Limit . Logout From Other Devices  To Login This Device'
+            )
+        );
 
     // Generating New Tokens
     const refreshToken = Authentication.generateRefreshToken({ id: foundUser._id });
