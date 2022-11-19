@@ -1,0 +1,46 @@
+Date : 2022-11-19 22:22:32
+Directory : c:\Users\rohan\Desktop\SocialMedia-NodeJS
+Total : 16 files,  5346 codes, 73 comments, 116 blanks, all 5535 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          3 |      4,915 |          0 |          2 |      4,917 |
+| JavaScript |         12 |        429 |         73 |        113 |        615 |
+| Markdown   |          1 |          2 |          0 |          1 |          3 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                    | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                       |         16 |      5,346 |         73 |        116 |      5,535 |
+| controller                                                              |          3 |        185 |         43 |         65 |        293 |
+| model                                                                   |          1 |        104 |          8 |         10 |        122 |
+| routes                                                                  |          2 |         19 |          4 |          6 |         29 |
+| utility                                                                 |          4 |         88 |         11 |         21 |        120 |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                | language   | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\.prettierrc                   | JSON       |          7 |          0 |          0 |          7 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\README.md                     | Markdown   |          2 |          0 |          1 |          3 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\app.js                        | JavaScript |         23 |          5 |          6 |         34 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\controller\AuthCtrl.js        | JavaScript |         65 |         16 |         26 |        107 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\controller\RenewTokenCtrl.js  | JavaScript |         38 |         13 |         14 |         65 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\controller\UserCtrl.js        | JavaScript |         82 |         14 |         25 |        121 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\model\User.js                 | JavaScript |        104 |          8 |         10 |        122 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\package-lock.json             | JSON       |      4,873 |          0 |          1 |      4,874 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\package.json                  | JSON       |         35 |          0 |          1 |         36 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\routes\AccessTokenRoute.js    | JavaScript |          5 |          2 |          3 |         10 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\routes\UserRoute.js           | JavaScript |         14 |          2 |          3 |         19 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\server.js                     | JavaScript |         10 |          2 |          5 |         17 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\utility\AppError.js           | JavaScript |         11 |          1 |          2 |         14 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\utility\catchAsync.js         | JavaScript |          5 |          0 |          1 |          6 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\utility\globalErrorHandler.js | JavaScript |         52 |          9 |         11 |         72 |
+| c:\Users\rohan\Desktop\SocialMedia-NodeJS\utility\tokenAPI.js           | JavaScript |         20 |          1 |          7 |         28 |
+| Total                                                                   |            |      5,346 |         73 |        116 |      5,535 |
++-------------------------------------------------------------------------+------------+------------+------------+------------+------------+

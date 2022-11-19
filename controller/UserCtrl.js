@@ -118,3 +118,20 @@ exports.findFriends = catchAsync(async (request, response, next) => {
         suggestionFriends,
     });
 });
+
+exports.searchFriends = catchAsync(async (request, response, next) => {
+    const queryString = request.query.name
+        .split('-')
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(' ');
+    const document = await User.find({
+        name: { $regex: queryString },
+    });
+
+    if (document.length === 0)
+        return next(new AppError(`Couldnot Find User With Name : ${queryString}`));
+
+    response.status(200).json({
+        document,
+    });
+});
