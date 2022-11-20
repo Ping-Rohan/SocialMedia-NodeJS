@@ -1,8 +1,6 @@
 const Post = require('../model/Post');
 const catchAsync = require('../utility/catchAsync');
-const AppError = require('../utility/AppError');
 const LikesAPI = require('../utility/likesAPI');
-const { findByIdAndDelete } = require('../model/Post');
 
 // Create New Post
 exports.createPost = catchAsync(async (request, response, next) => {
@@ -29,6 +27,33 @@ exports.deletePost = catchAsync(async (request, response, next) => {
     await findByIdAndDelete({ _id: request.params.id, user: request.user.id });
     response.status(200).json({
         message: 'Post Deleted Successfully',
+    });
+});
+
+// Update Post
+exports.updatePost = catchAsync(async (request, response, next) => {
+    // Filtering Body
+    const filerOptions = ['likedBy', 'reportedBy'];
+    if (request.body.likedBy || request.body.reportedBy)
+        filerOptions.forEach((el) => delete request.body[el]);
+    console.log(request.body);
+    await Post.findByIdAndUpdate({ _id: request.params.id, user: request.user.id }, request.body);
+
+    response.status(200).json({
+        message: 'Updated Successfully',
+    });
+});
+
+// Discover Post
+exports.discoverPost = catchAsync(async (request, response, next) => {
+    const friendsArr = [...request.user.following];
+    const Posts = await Post.aggregate([
+        { $match: { user: { $in: friendsArr } } },
+        { $sample: { size: 10 } },
+    ]);
+
+    response.status(200).json({
+        Posts,
     });
 });
 
