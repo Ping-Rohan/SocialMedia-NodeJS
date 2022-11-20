@@ -1,6 +1,7 @@
 const Post = require('../model/Post');
 const catchAsync = require('../utility/catchAsync');
 const AppError = require('../utility/AppError');
+const LikesAPI = require('../utility/likesAPI');
 
 // Create New Post
 exports.createPost = catchAsync(async (request, response, next) => {
@@ -23,25 +24,11 @@ exports.getAllPostOfUser = catchAsync(async (request, response, next) => {
 });
 
 exports.toggleLike = catchAsync(async (request, response, next) => {
-    let likes;
-    const post = await Post.findOne({ _id: request.params.id, likedBy: request.user.id });
-    if (!post) {
-        const updatedPost = await Post.findByIdAndUpdate(
-            { _id: request.params.id },
-            { $push: { likedBy: request.user.id } },
-            { new: true }
-        );
-        likes = updatedPost.likedBy.length;
-    } else {
-        const updatedPost = await Post.findByIdAndUpdate(
-            { _id: request.params.id },
-            { $pull: { likedBy: request.user.id } },
-            { new: true }
-        );
-        likes = updatedPost.likedBy.length;
-    }
-
+    // Likes Counter Constructor
+    const likesApi = new LikesAPI(Post, request);
+    // Toggle Like And Count Numbers
+    const totalLikes = await likesApi.countLikes();
     response.status(200).json({
-        likes,
+        totalLikes,
     });
 });
