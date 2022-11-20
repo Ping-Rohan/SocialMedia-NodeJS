@@ -3,11 +3,13 @@ class LikeApi {
         this.model = model;
         this.request = request;
     }
+    // Toggles Likes
     async toggleLike() {
         const document = await this.model.findOne({
             _id: this.request.params.id,
             likedBy: this.request.user.id,
         });
+        // Checking if Already Liked Or Not
         if (!document) {
             return await this.model.findByIdAndUpdate(
                 { _id: this.request.params.id },
@@ -22,7 +24,7 @@ class LikeApi {
             );
         }
     }
-
+    // Counting Total Numbers Of Likes
     async countLikes() {
         const likedDocument = await this.toggleLike();
         return likedDocument.likedBy.length;
