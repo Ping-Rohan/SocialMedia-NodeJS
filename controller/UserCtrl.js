@@ -2,9 +2,23 @@ const Authentication = require('../controller/AuthCtrl');
 const catchAsync = require('../utility/catchAsync');
 const User = require('../model/User');
 const AppError = require('../utility/AppError');
+const sharp = require('sharp');
 
 // Create New Account
 exports.createNewAccount = catchAsync(async (request, response, next) => {
+    // Handling Profile Image First
+    if (request.file) {
+        // Setting Filename
+        request.file.filename = `profile-${request.body.email}-${Date.now()}.jpeg`;
+        request.body.profilePicture = request.file.filename;
+
+        //Processing Image
+        await sharp(request.file.buffer)
+            .jpeg({ quality: 90 })
+            .resize(500, 500)
+            .toFile(`public/profile/${request.file.filename}`);
+    }
+
     const document = await User.create(request.body);
 
     // generate access and refresh token

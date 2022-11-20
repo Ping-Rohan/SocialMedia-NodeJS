@@ -1,9 +1,24 @@
+const sharp = require('sharp');
 const Post = require('../model/Post');
 const catchAsync = require('../utility/catchAsync');
 const LikesAPI = require('../utility/likesAPI');
 
 // Create New Post
 exports.createPost = catchAsync(async (request, response, next) => {
+    // Checking If Image Was Uploaded
+    if (request.files) {
+        request.body.photos = [];
+        await Promise.all(
+            request.files.map(async (file, index) => {
+                file.filename = `post-${request.user.id}-${Date.now()}-${index}.jpeg`;
+                await sharp(file.buffer)
+                    .jpeg({ quality: 70 })
+                    .toFile(`public/post/${file.filename}`);
+
+                request.body.photos.push(file.filename);
+            })
+        );
+    }
     request.body.user = request.user.id;
     const post = await Post.create(request.body);
 

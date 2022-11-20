@@ -12,19 +12,33 @@ exports.comment = catchAsync(async (request, response, next) => {
     });
 });
 
+// Delete Comment
+exports.deleteComment = catchAsync(async (request, response, next) => {
+    await Comment.findOneAndDelete({ _id: request.params.id, user: request.user.id });
+    response.status(200).json({
+        message: 'Comment Deleted Successfully',
+    });
+});
+
+// Update Comment
+exports.updateComment = catchAsync(async (request, response, next) => {
+    await Comment.findOneAndUpdate(
+        { _id: request.params.id, user: request.user.id },
+        {
+            text: request.body.text,
+        }
+    );
+
+    response.status(200).json({
+        message: 'Comment Updated Successfully',
+    });
+});
+
 // Toggle Like
 exports.toggleCommentLike = catchAsync(async (request, response, next) => {
     const likeAPI = new LikeAPI(Comment, request);
     const totalLikes = await likeAPI.countLikes();
     response.status(200).json({
         totalLikes,
-    });
-});
-
-// Delete Comment
-exports.deleteComment = catchAsync(async (request, response, next) => {
-    await Comment.findOneAndDelete({ _id: request.params.id, user: request.user.id });
-    response.status(200).json({
-        message: 'Comment Deleted Successfully',
     });
 });

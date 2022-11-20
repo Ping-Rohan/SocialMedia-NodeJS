@@ -2,9 +2,10 @@ const UserController = require('../controller/UserCtrl');
 const Authentication = require('../controller/AuthCtrl');
 const express = require('express');
 const Router = express.Router();
+const upload = require('../utility/Multer');
 
 // routes
-Router.route('/signup').post(UserController.createNewAccount);
+Router.route('/signup').post(upload.single('profile'), UserController.createNewAccount);
 Router.route('/login').post(Authentication.login);
 Router.route('/clear-devices').post(Authentication.clearDevices);
 Router.use(Authentication.verifyJWT);
